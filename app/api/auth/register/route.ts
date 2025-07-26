@@ -8,18 +8,18 @@ interface RegisterBody {
   email: string;
   password: string;
 }
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: RegisterBody = await request.json();
 
     const { name, email, password } = body;
     if (!name || !email || !password) {
-      return Response.json({ error: "All fields required" }, { status: 400 });
+      return NextResponse.json({ error: "All fields required" }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return Response.json({ error: "Email already in use" }, { status: 409 });
+      return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

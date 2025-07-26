@@ -7,7 +7,7 @@ interface LoginBody {
   email: string;
   password: string;
 }
-export async function POST(request: NextRequest){
+export async function POST(request: NextRequest): Promise<NextResponse> {
     try {
         const body: LoginBody = await request.json();
         const { email, password } = body;
