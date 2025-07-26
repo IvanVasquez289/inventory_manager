@@ -1,11 +1,47 @@
+"use client"
+import { axiosInstance } from '@/lib/axios'
+import { useAuthStore } from '@/store/useAuthStore'
+import { FormLogin } from '@/types'
 import Link from 'next/link'
-import React from 'react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 
 const LoginPage = () => {
+  const router = useRouter()
+  const setToken = useAuthStore((state) => state.setToken)
+  const [formData, setFormData] = useState<FormLogin>({
+    email: '',
+    password: ''
+  })
+
+  const isValid = () => {
+    return formData.email !== '' && formData.password !== '';
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValid()) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    try {
+      const response = await axiosInstance.post('/auth/login', formData);
+      if(response.status === 200) {
+        setToken(response.data.token);
+        router.push('/products')
+      }
+      
+    } catch (error) {
+      if( error instanceof Error) {
+        console.log(`Error: ${error.message}`);
+      }
+    }
+  }
   return (
     <div className='h-screen flex justify-center items-center text-black'>
       <div className='bg-gray-100 p-8 rounded shadow-md w-96'>
-        <form>
+        <form onSubmit={handleSubmit}>
           <h2 className='text-2xl font-bold mb-6 text-center'>Login</h2>
           <div className='mb-4'>
             <label className='block text-sm font-medium mb-2' htmlFor='email'>Email</label>
@@ -15,6 +51,8 @@ const LoginPage = () => {
               className='w-full p-2 border border-gray-300 rounded'
               placeholder='Enter your email'
               required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
           <div className='mb-6'>
@@ -25,6 +63,8 @@ const LoginPage = () => {
               className='w-full p-2 border border-gray-300 rounded'
               placeholder='Enter your password'
               required
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
           <button
