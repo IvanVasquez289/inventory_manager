@@ -5,14 +5,17 @@ import { NextRequest, NextResponse } from "next/server";
 interface ProductInput {
   name: string;
   description?: string;
-  price: number
+  price: number;
 }
-export async function GET(req: NextRequest,{ params }: { params: { productId: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { productId: string } }
+) {
   // Authenticate the user
-  const auth = await authenticate(req)
-  if (!auth.valid) return auth.response!
+  const auth = await authenticate(req);
+  if (!auth.valid) return auth.response!;
 
-  const {productId} = await params ;
+  const { productId } = await params;
   const id = Number(productId);
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
@@ -26,19 +29,23 @@ export async function GET(req: NextRequest,{ params }: { params: { productId: st
   return NextResponse.json(product);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { productId: string } }) {
-  const auth = await authenticate(req)
-  if (!auth.valid) return auth.response!
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { productId: string } }
+) {
+  const auth = await authenticate(req);
+  if (!auth.valid) return auth.response!;
 
-  const {productId} = await params ;
+  const { productId } = await params;
   const id = Number(productId);
-  if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+  if (isNaN(id))
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
-  const data: ProductInput = await req.json()
-  const { name, description, price } = data
+  const data: ProductInput = await req.json();
+  const { name, description, price } = data;
 
   if (!name || !price) {
-    return NextResponse.json({ error: 'All fields required' }, { status: 400 })
+    return NextResponse.json({ error: "All fields required" }, { status: 400 });
   }
 
   try {
@@ -49,26 +56,36 @@ export async function PUT(req: NextRequest, { params }: { params: { productId: s
         description: description || null,
         price,
       },
-    })
+    });
 
-    return NextResponse.json(updated)
-  } catch (err) {
-    return NextResponse.json({ error: 'Error updating product' }, { status: 500 })
+    return NextResponse.json(updated);
+  } catch {
+    return NextResponse.json(
+      { error: "Error updating product" },
+      { status: 500 }
+    );
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { productId: string } }) {
-  const auth = await authenticate(req)
-  if (!auth.valid) return auth.response!
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { productId: string } }
+) {
+  const auth = await authenticate(req);
+  if (!auth.valid) return auth.response!;
 
-  const {productId} = await params ;
+  const { productId } = await params;
   const id = Number(productId);
-  if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+  if (isNaN(id))
+    return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
   try {
-    await prisma.product.delete({ where: { id } })
-    return NextResponse.json({ message: 'Product deleted' }, { status: 200 })
-  } catch (err) {
-    return NextResponse.json({ error: 'Error deleting product' }, { status: 500 })
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ message: "Product deleted" }, { status: 200 });
+  } catch {
+    return NextResponse.json(
+      { error: "Error deleting product" },
+      { status: 500 }
+    );
   }
 }

@@ -13,7 +13,6 @@ const ProductsPage = () => {
     }
   }, [token, router]);
 
-  if (token) return null;
   return <div>ProductsPage</div>;
 };
 

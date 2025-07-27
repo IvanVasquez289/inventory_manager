@@ -2,7 +2,6 @@
 
 import { axiosInstance } from "@/lib/axios";
 import { AuthUser } from "@/types";
-import axios from "axios";
 import { create } from "zustand";
 
 interface AuthState {
@@ -19,20 +18,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   checkAuth: async () => {
     const token = localStorage.getItem("token");
-    if (token) {
-      set({ token });
-      try {
-        const {data} = await axiosInstance.get("/profile")
-        set({ user: data });
-      } catch (error) {
-        console.error("Token inválido o expirado")
-        localStorage.removeItem("token")
-        set({ token: null, user: null })
-      } 
-    }else{
-      set({ token: null, user: null });
+    if (!token) return set({ token: null, user: null });
+    set({ token });
+    try {
+      const {data} = await axiosInstance.get("/profile")
+      set({ user: data });
+    } catch{
+      localStorage.removeItem("token")
+      set({ token: null, user: null })
     }
-
   },
   setToken: (token: string) => {
     if (token) {

@@ -1,9 +1,18 @@
-import React from 'react'
+"use client";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const ProfilePage = () => {
-  return (
-    <div>ProfilePage</div>
-  )
-}
+  const router = useRouter();
+  const token = useAuthStore((state) => state.token);
 
-export default ProfilePage
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+    }
+  }, [token, router]);
+  return <div>ProfilePage</div>;
+};
+
+export default ProfilePage;

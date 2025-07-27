@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(products);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error fetching products" }, { status: 500 });
   }
 }
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       },
     });
     return NextResponse.json(newProduct, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Error creating product" }, { status: 500 });
   }
 }
