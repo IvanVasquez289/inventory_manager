@@ -19,9 +19,10 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
+  const search = searchParams.get("search") || "";
 
   try {
-    const products = await getUserProducts(userId, page, limit);
+    const products = await getUserProducts(userId, page, limit, search);
     return NextResponse.json(products);
   } catch (error) {
     return handleApiError(error);

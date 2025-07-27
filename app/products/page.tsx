@@ -19,8 +19,18 @@ const ProductsPage = () => {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const limit = 5; // productos por página
+  const limit = 6;
 
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // Debounce para búsqueda
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Fetch de productos con paginación y búsqueda
   useEffect(() => {
     if (!token) {
       router.push("/login");
@@ -30,14 +40,16 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const { data } = await axiosInstance.get(`/products?page=${page}&limit=${limit}`);
+        const { data } = await axiosInstance.get(
+          `/products?page=${page}&limit=${limit}&search=${encodeURIComponent(debouncedSearch)}`
+        );
         setProducts(data.products);
         setTotalPages(data.totalPages);
       } catch (error) {
         if (error instanceof AxiosError) {
           setErrorMessage({
             type: "error",
-            text: error.response?.data?.error || "Error loading products",
+            text: error.response?.data?.error || "Error cargando productos",
           });
         }
       } finally {
@@ -46,7 +58,7 @@ const ProductsPage = () => {
     };
 
     fetchProducts();
-  }, [token, router, setProducts, page]);
+  }, [token, router, setProducts, page, debouncedSearch]);
 
   if (loading) return <div>Cargando productos...</div>;
   if (errorMessage) return <div className="text-red-600">Error: {errorMessage.text}</div>;
@@ -59,8 +71,23 @@ const ProductsPage = () => {
           Crear producto
         </Link>
       </div>
+
+      {/* Búsqueda */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); // Reiniciar página al cambiar búsqueda
+          }}
+          placeholder="Buscar productos..."
+          className="w-full px-3 py-2 border rounded"
+        />
+      </div>
+
       {products.length === 0 ? (
-        <p>No tienes productos aún.</p>
+        <p>No se encontraron productos.</p>
       ) : (
         <>
           <ul className="space-y-4 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -69,6 +96,7 @@ const ProductsPage = () => {
             ))}
           </ul>
 
+          {/* Controles de paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
@@ -77,9 +105,7 @@ const ProductsPage = () => {
             >
               Anterior
             </button>
-            <span>
-              Página {page} de {totalPages}
-            </span>
+            <span>Página {page} de {totalPages}</span>
             <button
               onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={page === totalPages}

@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { ProductInput } from "@/types";
+import { Prisma } from "@prisma/client";
 
 export const ProductErrors = {
   MISSING_FIELDS: { message: "Name and price are required", status: 400 },
@@ -8,12 +9,23 @@ export const ProductErrors = {
   INTERNAL_ERROR: { message: "Internal Server Error", status: 500 },
 };
 
-export async function getUserProducts(userId: number, page: number, limit: number) {
+export async function getUserProducts(userId: number, page: number, limit: number, search = "") {
   const skip = (page - 1) * limit;
   try {
+    const where: Prisma.ProductWhereInput = {
+      userId,
+      ...(search
+        ? {
+            OR: [
+              { name: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+    };
     const [products, total] = await Promise.all([
       prisma.product.findMany({
-        where: { userId },
+        where,
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
