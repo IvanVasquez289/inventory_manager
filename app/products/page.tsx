@@ -1,9 +1,20 @@
-import React from 'react'
+"use client";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const ProductsPage = () => {
-  return (
-    <div>ProductsPage</div>
-  )
-}
+  const router = useRouter();
+  const token = useAuthStore((state) => state.token);
 
-export default ProductsPage
+  useEffect(() => {
+    if (!token) {
+      router.push("/login")
+    }
+  }, [token, router]);
+
+  if (token) return null;
+  return <div>ProductsPage</div>;
+};
+
+export default ProductsPage;

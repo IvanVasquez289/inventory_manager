@@ -4,10 +4,11 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { FormRegister } from '@/types'
 import Link from 'next/link'
 import {  useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const RegisterPage = () => {
   const router = useRouter()
+  const token = useAuthStore((state) => state.token)
   const setToken = useAuthStore((state) => state.setToken)
   const [formData, setFormData] = useState<FormRegister>({
     name: '',
@@ -15,6 +16,11 @@ const RegisterPage = () => {
     password: ''
   })
 
+  useEffect(() => {
+    if (token) {
+      router.push('/products');
+    }
+  })
   const isValid = () => {
     return formData.name !== '' && formData.email !== '' && formData.password !== '';
   }
