@@ -9,7 +9,16 @@ export const ProductErrors = {
   INTERNAL_ERROR: { message: "Internal Server Error", status: 500 },
 };
 
-export async function getUserProducts(userId: number, page: number, limit: number, search = "") {
+export async function getUserProducts(
+  userId: number,
+  page: number,
+  limit: number,
+  search = "",
+  minPrice?: number,
+  maxPrice?: number,
+  startDate?: string,
+  endDate?: string
+) {
   const skip = (page - 1) * limit;
   try {
     const where: Prisma.ProductWhereInput = {
@@ -22,7 +31,24 @@ export async function getUserProducts(userId: number, page: number, limit: numbe
             ],
           }
         : {}),
+      ...(minPrice !== undefined || maxPrice !== undefined
+        ? {
+            price: {
+              ...(minPrice !== undefined ? { gte: minPrice } : {}),
+              ...(maxPrice !== undefined ? { lte: maxPrice } : {}),
+            },
+          }
+        : {}),
+      ...(startDate || endDate
+        ? {
+            createdAt: {
+              ...(startDate ? { gte: new Date(startDate) } : {}),
+              ...(endDate ? { lte: new Date(endDate) } : {}),
+            },
+          }
+        : {}),
     };
+    
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -30,7 +56,7 @@ export async function getUserProducts(userId: number, page: number, limit: numbe
         skip,
         take: limit,
       }),
-      prisma.product.count({ where: { userId } }),
+      prisma.product.count({ where }),
     ]);
 
     return {
@@ -120,6 +146,6 @@ export async function deleteProduct(id: number) {
     const deleted = await prisma.product.delete({ where: { id } });
     return deleted;
   } catch {
-    throw ProductErrors.INTERNAL_ERROR; 
+    throw ProductErrors.INTERNAL_ERROR;
   }
 }

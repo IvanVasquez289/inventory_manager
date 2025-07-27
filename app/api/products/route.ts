@@ -20,9 +20,26 @@ export async function GET(req: NextRequest) {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "10", 10);
   const search = searchParams.get("search") || "";
+  const minPrice = searchParams.get("minPrice")
+    ? parseFloat(searchParams.get("minPrice")!)
+    : undefined;
+  const maxPrice = searchParams.get("maxPrice")
+    ? parseFloat(searchParams.get("maxPrice")!)
+    : undefined;
+  const startDate = searchParams.get("startDate") || undefined;
+  const endDate = searchParams.get("endDate") || undefined;
 
   try {
-    const products = await getUserProducts(userId, page, limit, search);
+    const products = await getUserProducts(
+      userId,
+      page,
+      limit,
+      search,
+      minPrice,
+      maxPrice,
+      startDate,
+      endDate
+    );
     return NextResponse.json(products);
   } catch (error) {
     return handleApiError(error);

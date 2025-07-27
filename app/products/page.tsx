@@ -21,8 +21,15 @@ const ProductsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 6;
 
+  // Búsqueda con debounce
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // Filtros
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   // Debounce para búsqueda
   useEffect(() => {
@@ -30,7 +37,7 @@ const ProductsPage = () => {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Fetch de productos con paginación y búsqueda
+  // Fetch de productos
   useEffect(() => {
     if (!token) {
       router.push("/login");
@@ -41,7 +48,7 @@ const ProductsPage = () => {
       setLoading(true);
       try {
         const { data } = await axiosInstance.get(
-          `/products?page=${page}&limit=${limit}&search=${encodeURIComponent(debouncedSearch)}`
+          `/products?page=${page}&limit=${limit}&search=${encodeURIComponent(debouncedSearch)}&minPrice=${minPrice}&maxPrice=${maxPrice}&startDate=${startDate}&endDate=${endDate}`
         );
         setProducts(data.products);
         setTotalPages(data.totalPages);
@@ -58,9 +65,8 @@ const ProductsPage = () => {
     };
 
     fetchProducts();
-  }, [token, router, setProducts, page, debouncedSearch]);
+  }, [token, router, setProducts, page, debouncedSearch, minPrice, maxPrice, startDate, endDate]);
 
-  if (loading) return <div>Cargando productos...</div>;
   if (errorMessage) return <div className="text-red-600">Error: {errorMessage.text}</div>;
 
   return (
@@ -79,12 +85,48 @@ const ProductsPage = () => {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(1); // Reiniciar página al cambiar búsqueda
+            setPage(1);
           }}
           placeholder="Buscar productos..."
           className="w-full px-3 py-2 border rounded"
         />
       </div>
+
+      {/* Filtros */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <input
+          type="number"
+          placeholder="Precio mínimo"
+          value={minPrice}
+          onChange={(e) => { setMinPrice(e.target.value); setPage(1); }}
+          className="px-3 py-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="Precio máximo"
+          value={maxPrice}
+          onChange={(e) => { setMaxPrice(e.target.value); setPage(1); }}
+          className="px-3 py-2 border rounded"
+        />
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+          className="px-3 py-2 border rounded"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+          className="px-3 py-2 border rounded"
+        />
+      </div>
+
+
+      {/* Mensaje de carga */}
+      {loading && (
+        <div className="text-gray-500 mb-4">Cargando productos...</div>
+      )}
 
       {products.length === 0 ? (
         <p>No se encontraron productos.</p>
