@@ -11,7 +11,7 @@ const Navbar = () => {
   const chekAuth = useAuthStore((state) => state.checkAuth)
   const logout = useAuthStore((state) => state.logout)
   const authUser = useAuthStore((state) => state.user)
-  console.log('authUser', authUser)
+  // console.log('authUser', authUser)
   // Carga el token de localStorage al montar el componente (cliente)
   useEffect(() => {
     chekAuth()
