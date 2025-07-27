@@ -8,13 +8,25 @@ export const ProductErrors = {
   INTERNAL_ERROR: { message: "Internal Server Error", status: 500 },
 };
 
-export async function getUserProducts(userId: number) {
+export async function getUserProducts(userId: number, page: number, limit: number) {
+  const skip = (page - 1) * limit;
   try {
-    const products = await prisma.product.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-    });
-    return products;
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.product.count({ where: { userId } }),
+    ]);
+
+    return {
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
   } catch {
     throw ProductErrors.INTERNAL_ERROR;
   }

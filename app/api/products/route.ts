@@ -16,8 +16,12 @@ export async function GET(req: NextRequest) {
 
   const userId = (auth.user as { id: number }).id;
 
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
+
   try {
-    const products = await getUserProducts(userId);
+    const products = await getUserProducts(userId, page, limit);
     return NextResponse.json(products);
   } catch (error) {
     return handleApiError(error);
