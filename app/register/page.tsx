@@ -41,7 +41,7 @@ const RegisterPage = () => {
 
   return (
     <div className="h-screen flex justify-center items-center text-black">
-      <div className="bg-gray-100 p-8 rounded shadow-md w-96">
+      <div className="bg-white p-8 rounded shadow-md w-96">
         <form onSubmit={handleSubmit}>
            {errorMessage && (
             <div className="py-2 px-4 mb-4 bg-red-100 text-red-700 border border-red-300 rounded text-center">

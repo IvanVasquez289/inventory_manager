@@ -9,7 +9,7 @@ interface ProductInput {
 }
 export async function GET(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   // Authenticate the user
   const auth = await authenticate(req);
@@ -31,7 +31,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   const auth = await authenticate(req);
   if (!auth.valid) return auth.response!;
