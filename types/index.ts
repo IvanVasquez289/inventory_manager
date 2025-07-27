@@ -16,3 +16,9 @@ export type AuthUser = {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface ProductInput {
+  name: string;
+  description?: string;
+  price: number;
+}
