@@ -16,12 +16,12 @@ export default function ExcelReader() {
       }
     }, [token, router]);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const workbook = XLSX.read(event.target.result, { type: 'binary' });
+        const workbook = XLSX.read(event.target?.result, { type: 'binary' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
