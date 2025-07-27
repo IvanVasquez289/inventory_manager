@@ -2,6 +2,7 @@
 import { axiosInstance } from "@/lib/axios";
 import { useAuthStore } from "@/store/useAuthStore";
 import { FormLogin } from "@/types";
+import { AxiosError } from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ const LoginPage = () => {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
   const setToken = useAuthStore((state) => state.setToken);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormLogin>({
     email: "",
     password: "",
@@ -24,16 +26,8 @@ const LoginPage = () => {
   // Opcional: mientras se redirige, no mostrar nada
   if (token) return null;
 
-  const isValid = () => {
-    return formData.email !== "" && formData.password !== "";
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid()) {
-      alert("Please fill in all fields");
-      return;
-    }
 
     try {
       const response = await axiosInstance.post("/auth/login", formData);
@@ -42,8 +36,8 @@ const LoginPage = () => {
         router.push("/products");
       }
     } catch (error) {
-      if (error instanceof Error) {
-        console.log(`Error: ${error.message}`);
+      if (error instanceof AxiosError) {
+        setErrorMessage(error.response?.data.error);
       }
     }
   };
@@ -51,6 +45,11 @@ const LoginPage = () => {
     <div className="h-screen flex justify-center items-center text-black">
       <div className="bg-gray-100 p-8 rounded shadow-md w-96">
         <form onSubmit={handleSubmit}>
+          {errorMessage && (
+            <div className="py-2 px-4 mb-4 bg-red-100 text-red-700 border border-red-300 rounded text-center">
+              {errorMessage}
+            </div>
+          )}
           <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2" htmlFor="email">
@@ -89,7 +88,7 @@ const LoginPage = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition duration-200"
+            className="w-full cursor-pointer bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition duration-200"
           >
             Login
           </button>
