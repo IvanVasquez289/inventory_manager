@@ -14,7 +14,6 @@ export default function Home() {
   }, [checkAuth])
 
   useEffect(() => {
-    if (token === null) return 
     if (token) {
       router.push('/products')
     } else {

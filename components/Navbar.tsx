@@ -47,6 +47,10 @@ const Navbar = () => {
             <Link href='/profile' className='hover:underline cursor-pointer'>
               Profile
             </Link>
+            <Link href='/upload' className='hover:underline cursor-pointer'>
+              Upload
+            </Link>
+
             <button onClick={handleLogout} className='hover:underline cursor-pointer'>
               Logout
             </button>
