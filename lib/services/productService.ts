@@ -122,6 +122,8 @@ export async function updateProduct(id: number, data: ProductInput) {
     throw ProductErrors.INVALID_PRICE;
   }
 
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (!product) throw ProductErrors.PRODUCT_NOT_FOUND;
   try {
     const updated = await prisma.product.update({
       where: { id },
@@ -142,6 +144,8 @@ export async function deleteProduct(id: number) {
     throw ProductErrors.MISSING_FIELDS;
   }
 
+  const product = await prisma.product.findUnique({ where: { id } });
+  if (!product) throw ProductErrors.PRODUCT_NOT_FOUND;
   try {
     const deleted = await prisma.product.delete({ where: { id } });
     return deleted;
