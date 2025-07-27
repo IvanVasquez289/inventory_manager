@@ -6,6 +6,7 @@ import { axiosInstance } from "@/lib/axios";
 import { AxiosError } from "axios";
 import ProductCard from "@/components/ProductCard";
 import { useProductStore } from "@/store/useProductStore";
+import Link from "next/link";
 
 
 
@@ -51,7 +52,10 @@ const ProductsPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Mis productos</h1>
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="text-2xl font-bold mb-4">Mis productos</h1>
+        <Link href="/products/new" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Crear producto</Link>
+      </div>
       {products.length === 0 ? (
         <p>No tienes productos aún.</p>
       ) : (
