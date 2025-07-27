@@ -1,11 +1,8 @@
+import { handleApiError } from "@/lib/handleApiError";
 import { registerUser } from "@/lib/services/authService";
+import { RegisterBody } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
-interface RegisterBody {
-  name: string;
-  email: string;
-  password: string;
-}
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body: RegisterBody = await request.json();
@@ -15,19 +12,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ token }, { status: 201 });
   } catch (error) {
-    if (
-      typeof error === "object" &&
-      error !== null &&
-      "message" in error &&
-      "status" in error
-    ) {
-      const err = error as { message: string; status: number };
-      return NextResponse.json({ error: err.message }, { status: err.status });
-    }
-
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    return handleApiError(error)
   }
 }

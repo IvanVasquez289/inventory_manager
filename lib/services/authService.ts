@@ -1,16 +1,9 @@
 import { prisma } from "@/lib/db";
+import { LoginBody, RegisterBody } from "@/types";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-interface LoginBody {
-  email: string;
-  password: string;
-}
-interface RegisterBody {
-  name: string;
-  email: string;
-  password: string;
-}
+
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 if (!JWT_SECRET) {

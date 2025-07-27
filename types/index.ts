@@ -1,10 +1,10 @@
-export type FormRegister = {
+export interface FormRegister {
   name: string;
   email: string;
   password: string;
 };
 
-export type FormLogin = {
+export interface FormLogin {
   email: string;
   password: string;
 };
@@ -16,6 +16,16 @@ export type AuthUser = {
   createdAt: string;
   updatedAt: string;
 };
+
+export interface LoginBody {
+  email: string;
+  password: string;
+}
+export interface RegisterBody {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export interface ProductInput {
   name: string;
