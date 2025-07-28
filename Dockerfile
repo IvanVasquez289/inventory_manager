@@ -1,26 +1,18 @@
-# Usar la imagen oficial de Node.js
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
-# Instalar dependencias necesarias para Prisma
+RUN npm install -g npm@latest
+
 RUN apk add --no-cache libc6-compat openssl
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de dependencias
 COPY package*.json ./
 COPY prisma ./prisma/
 
-# Instalar TODAS las dependencias (incluyendo devDependencies para el build)
 RUN npm ci
 
-# Generar el cliente de Prisma
-RUN npx prisma generate
-
-# Copiar el código fuente
 COPY . .
 
-# Configurar variables de entorno para el build
 ARG JWT_SECRET
 ARG DATABASE_URL
 ARG NODE_ENV=production
@@ -34,21 +26,18 @@ ENV POSTGRES_USER=$POSTGRES_USER
 ENV POSTGRES_PASSWORD=$POSTGRES_PASSWORD
 ENV NODE_ENV=$NODE_ENV
 
-# Construir la aplicación
-RUN npm run build
+RUN npm run build:docker
 
-# Imagen de producción
-FROM node:18-alpine AS runner
+FROM node:22-alpine AS runner
+
+RUN npm install -g npm@latest
 
 WORKDIR /app
 
 ENV NODE_ENV production
 
-# Crear usuario no-root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-# Instalar dependencias necesarias para Prisma
 RUN apk add --no-cache libc6-compat openssl
 
 # Copiar archivos necesarios desde la imagen base
@@ -58,15 +47,13 @@ COPY --from=base /app/next.config.ts ./
 COPY --from=base /app/prisma ./prisma
 COPY --from=base /app/.next/standalone ./
 COPY --from=base /app/.next/static ./.next/static
+COPY --from=base /app/scripts ./scripts
 
-# Instalar solo dependencias de producción
-RUN npm ci --only=production
-
-# Generar el cliente de Prisma en producción
-RUN npx prisma generate
-
-# Cambiar propietario de los archivos
-RUN chown -R nextjs:nodejs /app
+# Instalar solo dependencias de producción y generar Prisma UNA SOLA VEZ
+RUN npm ci --only=production && \
+    npx prisma generate && \
+    npm cache clean --force && \
+    chown -R nextjs:nodejs /app
 
 USER nextjs
 
@@ -75,4 +62,5 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"] 
+# Inicializar base de datos y luego iniciar la aplicación
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss && exec node server.js"]

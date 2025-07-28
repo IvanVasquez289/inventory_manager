@@ -2,8 +2,8 @@
 -- Este archivo se ejecuta automáticamente cuando se crea el contenedor de PostgreSQL
 
 -- Crear la base de datos si no existe
-SELECT 'CREATE DATABASE prueba_tecnica'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'prueba_tecnica')\gexec
+SELECT 'CREATE DATABASE inventory'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'inventory')\gexec
 
 -- Conectar a la base de datos
-\c prueba_tecnica;
+\c inventory;
