@@ -29,6 +29,11 @@ Contraseña: password
 
 ## ▶️ Cómo iniciar el proyecto
 
+Es necesario copiar las credenciales del `.env.example` al archivo `.env` y crear este ultimo en caso de ser necesario. Para esto podemos usar el siguiente comando.
+```bash
+cp .env.example .env
+```
+
 ```bash
 git clone https://github.com/IvanVasquez289/inventory
 cd inventory
