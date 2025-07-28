@@ -7,6 +7,7 @@ Este proyecto es una API construida con **Next.js 15 (App Router)** y **TypeScri
 - 📦 CRUD de productos
 - 🛡️ Validación de entradas, autenticación y manejo de errores
 - 🧪 Pruebas unitarias con Jest
+- 📚 Leer archivos excel y obtener datos especificos
 
 ---
 
