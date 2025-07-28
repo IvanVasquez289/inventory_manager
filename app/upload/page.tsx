@@ -1,30 +1,21 @@
 "use client"
 import * as XLSX from 'xlsx';
-import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/useAuthStore';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ExcelReader() {
-  const router = useRouter();
   const [data, setData] = useState([]);
-  const token = useAuthStore((state) => state.token);
 
-    useEffect(() => {
-      if (!token) {
-        router.push("/login");
-        return 
-      }
-    }, [token, router]);
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const workbook = XLSX.read(event.target?.result, { type: 'binary' });
+        const workbook = XLSX.read(event.target.result, { type: 'binary' });
+        console.log(workbook)
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        console.log(jsonData)
         setData(jsonData);
       };
       reader.readAsBinaryString(file);

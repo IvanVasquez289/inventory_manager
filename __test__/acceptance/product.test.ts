@@ -1,13 +1,12 @@
 // __tests__/productIdRoute.test.ts
-import { GET, PUT, DELETE } from '../app/api/products/[productId]/route';
-import { authenticate } from '../middlewares/auth';
-import { getProductById, updateProduct, deleteProduct } from '../lib/services/productService';
-import { handleApiError } from '../lib/handleApiError';
+import { GET, PUT, DELETE } from '@/app/api/products/[productId]/route';
+import { authenticate } from '@/middlewares/auth';
+import { getProductById, updateProduct, deleteProduct } from '@/lib/services/productService';
 import { NextRequest } from 'next/server';
 
-jest.mock('../middlewares/auth');
-jest.mock('../lib/services/productService');
-jest.mock('../lib/handleApiError');
+jest.mock('@/middlewares/auth');
+jest.mock('@/lib/services/productService');
+jest.mock('@/lib/handleApiError');
 
 describe('Product API route', () => {
   const params = Promise.resolve({ productId: '1' });

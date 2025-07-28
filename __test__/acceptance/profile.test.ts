@@ -1,13 +1,13 @@
 // __test__/profile.test.ts
-import { GET, PUT } from '../app/api/profile/route';
-import { authenticate } from '../middlewares/auth';
-import { updateUserProfile } from '../lib/services/profileService';
-import { prisma } from '../lib/db';
+import { GET, PUT } from '@/app/api/profile/route';
+import { authenticate } from '@/middlewares/auth';
+import { updateUserProfile } from '@/lib/services/profileService';
+import { prisma } from '@/lib/db';
 import { NextRequest } from 'next/server';
 
-jest.mock('../middlewares/auth');
-jest.mock('../lib/services/profileService');
-jest.mock('../lib/db', () => ({
+jest.mock('@/middlewares/auth');
+jest.mock('@/lib/services/profileService');
+jest.mock('@/lib/db', () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),

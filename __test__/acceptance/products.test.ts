@@ -1,7 +1,7 @@
-import { getUserProducts, createProduct, ProductErrors } from '../lib/services/productService';
-import { prisma } from '../lib/db';
+import { getUserProducts, createProduct, ProductErrors } from '@/lib/services/productService';
+import { prisma } from '@/lib/db';
 
-jest.mock('../lib/db', () => ({
+jest.mock('@/lib/db', () => ({
   prisma: {
     product: {
       findMany: jest.fn(),

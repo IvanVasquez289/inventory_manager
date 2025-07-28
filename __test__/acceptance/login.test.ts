@@ -1,9 +1,9 @@
 // __tests__/login.test.ts
-import { POST } from '../app/api/auth/login/route';
-import { loginUser } from '../lib/services/authService';
+import { POST } from '@/app/api/auth/login/route';
+import { loginUser } from '@/lib/services/authService';
 import { NextRequest } from 'next/server';
 
-jest.mock('../lib/services/authService');
+jest.mock('@/lib/services/authService');
 
 describe('POST /api/login', () => {
   afterEach(() => {

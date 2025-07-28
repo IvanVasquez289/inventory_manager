@@ -1,9 +1,9 @@
 // __tests__/register.test.ts
-import { POST } from '../app/api/auth/register/route';
-import { registerUser } from '../lib/services/authService';
+import { POST } from '@/app/api/auth/register/route';
+import { registerUser } from '@/lib/services/authService';
 import { NextRequest } from 'next/server';
 
-jest.mock('../lib/services/authService');
+jest.mock('@/lib/services/authService');
 
 describe('POST /api/register', () => {
   afterEach(() => {
