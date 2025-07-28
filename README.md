@@ -36,8 +36,8 @@ cp .env.example .env
 ```
 
 ```bash
-git clone https://github.com/IvanVasquez289/inventory
-cd inventory
+git clone https://github.com/IvanVasquez289/inventory_manager
+cd inventory_manager
 scripts/docker-setup.sh
 ```
 ### Comándos útiles
