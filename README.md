@@ -10,10 +10,10 @@ Este proyecto es una API construida con **Next.js 15 (App Router)** y **TypeScri
 
 ---
 
+##  Documentacion de la API
+https://documenter.getpostman.com/view/19105603/2sB3B7NDvW
 
-
-
-## Requisitos
+##  Requisitos
 éste proyecto utiliza docker para crear una versión de producción que pueda ejecutarse en cualquier computadora para eso será necesario tener instalado lo siguiente:
 * docker
 * docker-compose
