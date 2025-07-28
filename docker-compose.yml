@@ -1,0 +1,73 @@
+services:
+  # Base de datos PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: prueba_tecnica_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicación Next.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - JWT_SECRET=${JWT_SECRET}
+        - DATABASE_URL=${DATABASE_URL}
+        - NODE_ENV=${NODE_ENV:-production}
+    container_name: prueba_tecnica_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+    volumes:
+      - ./uploads:/app/uploads
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        echo 'Checking for existing migrations...' &&
+        if [ -d 'prisma/migrations' ] && [ \"$(ls -A prisma/migrations)\" ]; then
+          echo 'Migrations found, applying them...' &&
+          npx prisma migrate deploy
+        else
+          echo 'No migrations found, creating initial migration...' &&
+          npx prisma migrate dev --name init --create-only &&
+          npx prisma migrate deploy
+        fi &&
+        echo 'Generating Prisma client...' &&
+        npx prisma generate &&
+        echo 'Starting application...' &&
+        node server.js
+      "
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge 
